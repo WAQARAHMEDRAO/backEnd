@@ -1,0 +1,52 @@
+const express = require("express");
+const router = express.Router();
+const jSchema = require("../model/jobSchema");
+router.post("/", async (req, res) => {
+  console.log(req.body);
+  const jobSchema = new jSchema({
+    Company_Name: req.body.Company_Name,
+    Job_Title: req.body.Job_Title,
+    Job_Description: req.body.Job_Description,
+    Created_at: req.body.Created_at,
+  });
+  try {
+    const dataSaced = await jobSchema.save();
+    res.status(200).send(dataSaced);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get("/", async (req, res) => {
+  const JobData = await jSchema.find();
+  res.json(JobData);
+});
+router.put("/:upid", async (req, res) => {
+  try {
+    const jobSchema = {
+      Company_Name: req.body.Company_Name,
+      Job_Title: req.body.Job_Title,
+      Job_Description: req.body.Job_Description,
+      Created_at: req.body.Created_at,
+    };
+    const upDatedJob = await jSchema.findByIdAndUpdate(
+      {
+        _id: req.params.upid,
+      },
+      jobSchema
+    );
+    res.json(jobSchema);
+  } catch (error) {
+    res.json({ message: error });
+  }
+});
+router.delete("/:did", async (req, res) => {
+  try {
+    const deletedJob = await jSchema.findByIdAndDelete(req.params.did);
+    res.json(deletedJob);
+  } catch (error) {
+    res.json({ message: error });
+  }
+});
+
+module.exports = router;
